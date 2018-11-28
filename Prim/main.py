@@ -2,6 +2,7 @@ import numpy as np
 import networkx as nx
 from math import inf
 
+#load names of cities to "labels"
 def load_labels():
   labels = {}
   count = 0
@@ -12,7 +13,8 @@ def load_labels():
           count+=1
   return labels
 
-
+#return next vertex in list of priorities
+#(vertex with minimum distance between it and an adjacent visited vertex)
 def ExtractMin(Q):
   for i in list(Q):
     if(Q[i] == min(Q.values())):
@@ -21,20 +23,19 @@ def ExtractMin(Q):
     print("ERROR")
     return (None)
 
+#return dictionary with MST's edges as values -> vertex as numbers (if option = 1)
+#return list of MST's edges -> vertex as the names of cities (if option != 1)
 def Prim(G, labels, option):
 
-  MinPath = {}
   MinPathNotVisited = {}
   Parent = {}
   MST = {}
   MSTcities = []
   
   for i in range(len(G.nodes())):
-    MinPath[i] = inf
     MinPathNotVisited[i] = inf
     Parent[i] = None
 
-  MinPath[0] = 0
   Parent[0] = -1
   current = 0
 
@@ -44,15 +45,13 @@ def Prim(G, labels, option):
 
     for i in list(G.adj[current]):
       if (current, i) in W and i in MinPathNotVisited:
-        if W[(current, i)] < MinPath[i]:
+        if W[(current, i)] < MinPathNotVisited[i]:
           MinPathNotVisited[i] = W[(current, i)]
-          MinPath[i] = MinPathNotVisited[i]
           Parent[i] = current
 
       elif (i, current) in W and i in MinPathNotVisited:
-        if W[(i, current)] < MinPath[i]:
+        if W[(i, current)] < MinPathNotVisited[i]:
           MinPathNotVisited[i] = W[(i, current)]
-          MinPath[i] = MinPathNotVisited[i]
           Parent[i] = current
     
     current = ExtractMin(MinPathNotVisited)
@@ -67,9 +66,11 @@ def Prim(G, labels, option):
 
 
 
-
+#read graph
 A = np.loadtxt('ha30_dist.txt')
 G = nx.from_numpy_matrix(A)
+
+#get weight of G edges
 W= nx.get_edge_attributes(G,'weight')
 
 labels = load_labels()
@@ -81,3 +82,4 @@ print(MST_names)
 
 
  
+
